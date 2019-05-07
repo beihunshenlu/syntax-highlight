@@ -11,7 +11,6 @@
 #define false 0
 #define uint32_t int
 
-
 enum
 {
     TK_NOTYPE = 256, OPERATOR, BRACKETS, TK_EQ, TK_NUMBER, TK_VARIABLE, TK_NEWLINE, TK_TAB, KEY_WORD
@@ -27,16 +26,16 @@ static struct rule
     int token_type;
 } rules[] =
 {
-    {" +", TK_NOTYPE},
-	{"[\n]+", TK_NEWLINE},
-	{"[\t]+", TK_TAB},
-    {"\\+", OPERATOR},                
-    {"[0-9]+", TK_NUMBER},        
-    {"-", OPERATOR},                   
-    {"\\*", OPERATOR},                 
-    {"\\/", OPERATOR},                 
-    {"\\(", BRACKETS},                 
-    {"\\)", BRACKETS},
+	{" +", TK_NOTYPE},
+    	{"[\n]+", TK_NEWLINE},
+    	{"[\t]+", TK_TAB},
+    	{"\\+", OPERATOR},                
+    	{"[0-9]+", TK_NUMBER},        
+	{"-", OPERATOR},                   
+	{"\\*", OPERATOR},                 
+	{"\\/", OPERATOR},                 
+	{"\\(", BRACKETS},                 
+	{"\\)", BRACKETS},
 	{"[a-zA-Z_][a-zA-Z_0-9]*", TK_VARIABLE},
 	{"#", OPERATOR},
 	{"<", OPERATOR},
@@ -89,15 +88,14 @@ void init_regex()
     int i;
     char error_msg[128];
     int ret;
-
     for (i = 0; i < NR_REGEX; i ++)
     {
         ret = regcomp(&re[i], rules[i].regex, REG_EXTENDED);
         if (ret != 0)
         {
             regerror(ret, &re[i], error_msg, 128);
-			printf("regex compilation failed: %s\n%s", error_msg, rules[i].regex);
-			assert(0);
+	    printf("regex compilation failed: %s\n%s", error_msg, rules[i].regex);
+	    assert(0);
         }
     }
 }
@@ -118,19 +116,16 @@ static bool make_token(char e[3000])
             {
                 char *substr_start = e + position;
                 int substr_len = pmatch.rm_eo;
-
                 position += substr_len;
-
-
                 switch (rules[i].token_type)
                 {
                 case TK_NOTYPE:
                 case OPERATOR:
                 case TK_NUMBER:
                 case BRACKETS:
-				case TK_VARIABLE:
-				case TK_NEWLINE:
-				case TK_TAB:
+		case TK_VARIABLE:
+		case TK_NEWLINE:
+		case TK_TAB:
                 default:
                     tokens[nr_token].type = rules[i].token_type;
                     if(substr_len > 90)
@@ -141,7 +136,7 @@ static bool make_token(char e[3000])
                     }
                     else
                     {
-						int j;
+			int j;
                         for(j = 0; j < substr_len; j ++)
                         {
                             tokens[nr_token].str[j] = substr_start[j];
@@ -149,22 +144,21 @@ static bool make_token(char e[3000])
                         tokens[nr_token].str[substr_len] = '\0';
                         nr_token ++;
                     }
-					//由于匹配出的TK_VARIABLE中可能由保留字，所以需要把保留字识别出来，把类型换成KEY_WORD
-					if((substr_len <= 90) && (tokens[nr_token - 1].type == TK_VARIABLE))
-					{
-						int j;
-						for(j = 0; j < 32; j ++)
-						{
-							if(strcmp(tokens[nr_token - 1].str, Key_Word[j]) == 0)
-							{
-								tokens[nr_token - 1].type = KEY_WORD;
-							}
-						}
-					}
-                    break;
-
-                }
+		    //由于匹配出的TK_VARIABLE中可能由保留字，所以需要把保留字识别出来，把类型换成KEY_WORD
+		    if((substr_len <= 90) && (tokens[nr_token - 1].type == TK_VARIABLE))
+		    {
+	                int j;
+			for(j = 0; j < 32; j ++)
+			{
+				if(strcmp(tokens[nr_token - 1].str, Key_Word[j]) == 0)
+				{
+					tokens[nr_token - 1].type = KEY_WORD;
+				}
+			}
+		    }
                 break;
+                }
+            break;
             }
         }
 
@@ -216,20 +210,20 @@ void syntax_light()
 		{
 			case TK_NOTYPE:
 				printf("%s", tokens[i].str);
-                break;
+                		break;
 			case TK_NEWLINE:
 				printf("%s", tokens[i].str);
-                break;
+                		break;
 			case TK_TAB:
 				printf("%s", tokens[i].str);
-                break;
-            case OPERATOR:
+                		break;
+            		case OPERATOR:
 				printf("\033[32m%s\033[0m", tokens[i].str);
 				break;
-            case TK_NUMBER:
+            		case TK_NUMBER:
 				printf("\033[31m%s\033[0m", tokens[i].str);
 				break;
-            case BRACKETS:
+            		case BRACKETS:
 				printf("\033[91m%s\033[0m", tokens[i].str);
 				break;
 			case TK_VARIABLE:
@@ -238,7 +232,7 @@ void syntax_light()
 			case KEY_WORD:
 				printf("\033[34m%s\033[0m", tokens[i].str);
 				break;
-            default:
+            		default:
 				assert(0);
 		}
 	}

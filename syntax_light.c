@@ -171,18 +171,6 @@ static bool make_token(char e[3000])
     return true;
 }
 
-uint32_t expr(char e[3000], bool *success)
-{
-    int i;
-	if (!make_token(e))
-    {
-        *success = false;
-        return 0;
-    }
-    *success = true;
-    return 0;
-}
-
 //读出a.c文件中的内容到ch字符串中
 void read_file(char ch[3000])
 {
@@ -244,7 +232,7 @@ int main()
 	bool success = 0;
 	char text[9000];
 	read_file(text);
-	expr(text, &success);
+	make_token(text);
 	syntax_light();
 	return 0;
 }
